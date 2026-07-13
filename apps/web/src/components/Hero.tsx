@@ -1,4 +1,4 @@
-import Button from "./Button";
+import { Button } from "@/components/ui/button";
 
 export default function Hero() {
   return (
@@ -7,12 +7,12 @@ export default function Hero() {
         AI Content Automation SaaS
       </h1>
 
-      <p className="mt-4 text-center text-slate-400">
+      <p className="mt-4 max-w-2xl text-center text-slate-400">
         Build, automate, and publish content with AI.
       </p>
 
       <div className="mt-8">
-        <Button text="Get Started" />
+        <Button size="lg">Get Started</Button>
       </div>
     </main>
   );
