@@ -32,10 +32,10 @@ const plans = [
 
 export default function Pricing() {
   return (
-    <section className="bg-slate-950 px-6 py-20 text-white">
+    <section id="pricing" className="bg-slate-950 px-6 py-20 text-white">
       <div className="mx-auto max-w-6xl">
         <h2 className="text-center text-4xl font-bold">
-          Simple Pricing
+          Plans built for growth
         </h2>
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">

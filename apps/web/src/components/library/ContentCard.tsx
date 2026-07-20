@@ -5,6 +5,8 @@ type Content = {
   tone: string;
   content: string;
   created_at: string;
+  favorite?: boolean;
+  archived?: boolean;
 };
 
 type Props = {
@@ -16,6 +18,8 @@ type Props = {
   saveEdit: (id: string) => void;
   deletePost: (id: string) => void;
   copyContent: (text: string) => void;
+  toggleFavorite: (id: string) => void;
+  toggleArchive: (id: string) => void;
 };
 
 export default function ContentCard({
@@ -27,6 +31,8 @@ export default function ContentCard({
   saveEdit,
   deletePost,
   copyContent,
+  toggleFavorite,
+  toggleArchive,
 }: Props) {
   const characterCount =
     editingId === post.id
@@ -51,6 +57,20 @@ export default function ContentCard({
         </div>
 
         <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => toggleFavorite(post.id)}
+            className={`rounded-lg px-4 py-2 transition ${post.favorite ? "bg-yellow-500 text-black" : "bg-slate-800 text-white"}`}
+          >
+            {post.favorite ? "★ Favorited" : "☆ Favorite"}
+          </button>
+
+          <button
+            onClick={() => toggleArchive(post.id)}
+            className={`rounded-lg px-4 py-2 transition ${post.archived ? "bg-purple-600 text-white" : "bg-slate-800 text-white"}`}
+          >
+            {post.archived ? "Archived" : "Archive"}
+          </button>
+
           <button
             onClick={() => copyContent(post.content)}
             className="rounded-lg bg-green-600 px-4 py-2 transition hover:bg-green-700"

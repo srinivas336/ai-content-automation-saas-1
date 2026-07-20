@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/lib/supabase";
 import LoadingSpinner from "@/components/library/LoadingSpinner";
 import EmptyState from "@/components/library/EmptyState";
 import Toast from "@/components/library/Toast";
@@ -17,6 +16,8 @@ type Content = {
   tone: string;
   content: string;
   created_at: string;
+  favorite?: boolean;
+  archived?: boolean;
 };
 
 export default function LibraryPage() {
@@ -45,21 +46,14 @@ export default function LibraryPage() {
 
   async function loadPosts() {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-
-      if (!session) return;
-
-      const response = await fetch("/api/library", {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
-
+      const response = await fetch("/api/demo-library");
       const data = await response.json();
-
-      if (!response.ok) throw new Error(data.error);
-
-      setPosts(data);
+      setPosts(
+        data.map((item: any) => ({
+          ...item,
+          created_at: item.createdAt,
+        }))
+      );
     } catch (error) {
       console.error(error);
     } finally {
@@ -75,18 +69,6 @@ export default function LibraryPage() {
 
   async function deletePost(id: string) {
     if (!confirm("Delete this content?")) return;
-
-    const response = await fetch("/api/library", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    });
-
-    if (!response.ok) {
-      setToast("Delete failed");
-      return;
-    }
-
     setPosts((prev) => prev.filter((p) => p.id !== id));
     setToast("Deleted!");
     setTimeout(() => setToast(""), 2000);
@@ -97,39 +79,36 @@ export default function LibraryPage() {
     setEditedContent(post.content);
   }
 
-  async function saveEdit(id: string) {
-    const response = await fetch("/api/library", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id,
-        content: editedContent,
-      }),
-    });
-
-    if (!response.ok) {
-      setToast("Update failed");
-      return;
-    }
-
+  function toggleFavorite(id: string) {
     setPosts((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, content: editedContent } : p
-      )
+      prev.map((post) => (post.id === id ? { ...post, favorite: !post.favorite } : post))
+    );
+    setToast("Updated!");
+    setTimeout(() => setToast(""), 2000);
+  }
+
+  function toggleArchive(id: string) {
+    setPosts((prev) =>
+      prev.map((post) => (post.id === id ? { ...post, archived: !post.archived } : post))
+    );
+    setToast("Updated!");
+    setTimeout(() => setToast(""), 2000);
+  }
+
+  async function saveEdit(id: string) {
+    setPosts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, content: editedContent } : p))
     );
 
     setEditingId(null);
     setEditedContent("");
     setToast("Saved!");
-
     setTimeout(() => setToast(""), 2000);
   }
 
   const filteredPosts = useMemo(() => {
     return posts
-      .filter((post) =>
-        platform === "All" ? true : post.platform === platform
-      )
+      .filter((post) => (platform === "All" ? true : post.platform === platform))
       .filter((post) => {
         const q = search.toLowerCase();
         return (
@@ -162,19 +141,11 @@ export default function LibraryPage() {
       <Toast message={toast} />
 
       <div className="mx-auto max-w-5xl">
-        <h1 className="text-4xl font-bold">
-          Content Library
-        </h1>
+        <h1 className="text-4xl font-bold">Content Library</h1>
 
         <div className="mt-8">
           <SearchBar value={search} onChange={setSearch} />
-
-          <FilterBar
-            platform={platform}
-            setPlatform={setPlatform}
-            sort={sort}
-            setSort={setSort}
-          />
+          <FilterBar platform={platform} setPlatform={setPlatform} sort={sort} setSort={setSort} />
         </div>
 
         {visiblePosts.length === 0 ? (
@@ -192,16 +163,14 @@ export default function LibraryPage() {
                 saveEdit={saveEdit}
                 deletePost={deletePost}
                 copyContent={copyContent}
+                toggleFavorite={toggleFavorite}
+                toggleArchive={toggleArchive}
               />
             ))}
           </div>
         )}
 
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          setCurrentPage={setCurrentPage}
-        />
+        <Pagination currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
       </div>
     </main>
   );

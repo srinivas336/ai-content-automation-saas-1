@@ -1,24 +1,24 @@
 export default function Features() {
   const features = [
     {
-      title: "AI Script Writing",
-      description: "Generate high-quality scripts for YouTube and Instagram using AI.",
+      title: "AI Content Generation",
+      description: "Create polished posts tailored to Instagram, LinkedIn, X, and Facebook in seconds.",
     },
     {
-      title: "Auto Publishing",
-      description: "Schedule and publish content to multiple social platforms.",
+      title: "Smart Rewrite Engine",
+      description: "Transform drafts instantly with rewrite, shorten, expand, and tone-changing actions.",
     },
     {
-      title: "Analytics Dashboard",
-      description: "Track views, engagement, and growth from one place.",
+      title: "Library + Analytics",
+      description: "Save, search, edit, export, and track content from one central workspace.",
     },
   ];
 
   return (
-    <section className="bg-slate-900 px-6 py-20 text-white">
+    <section id="features" className="bg-slate-900 px-6 py-20 text-white">
       <div className="mx-auto max-w-6xl">
         <h2 className="text-center text-4xl font-bold">
-          Features
+          Everything you need to launch faster
         </h2>
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">
