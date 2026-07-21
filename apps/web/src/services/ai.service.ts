@@ -3,7 +3,8 @@ import { openRouterChat } from "@/lib/openrouter";
 export async function generateContent(
   platform: string,
   topic: string,
-  tone: string
+  tone: string,
+  userEmail?: string
 ) {
   const prompt = `
 You are an expert social media content creator.
@@ -15,6 +16,9 @@ ${topic}
 
 Tone:
 ${tone}
+
+User email:
+${userEmail ?? "demo user"}
 
 Requirements:
 - Make it engaging.
@@ -29,7 +33,7 @@ Requirements:
   const text = data?.choices?.[0]?.message?.content;
 
   if (!text) {
-    throw new Error("No content returned from OpenRouter.");
+    throw new Error("No content returned from the AI service.");
   }
 
   return text;

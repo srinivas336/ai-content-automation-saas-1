@@ -1,34 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateContent } from "@/services/ai.service";
-import { saveContent } from "@/services/database.service";
-import { supabaseAdmin } from "@/lib/supabase-admin";
 
 export async function POST(req: NextRequest) {
   try {
-    const authHeader = req.headers.get("Authorization");
+    const { platform, topic, tone, userEmail } = await req.json();
 
-    if (!authHeader) {
+    if (!userEmail) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
       );
     }
-
-    const token = authHeader.replace("Bearer ", "");
-
-    const {
-      data: { user },
-      error,
-    } = await supabaseAdmin.auth.getUser(token);
-
-    if (error || !user) {
-      return NextResponse.json(
-        { error: "Invalid user" },
-        { status: 401 }
-      );
-    }
-
-    const { platform, topic, tone } = await req.json();
 
     if (!platform || !topic || !tone) {
       return NextResponse.json(
@@ -41,19 +23,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const text = await generateContent(
-      platform,
-      topic,
-      tone
-    );
-
-    await saveContent({
-      userId: user.id,
-      platform,
-      topic,
-      tone,
-      content: text,
-    });
+    const text = await generateContent(platform, topic, tone, userEmail);
 
     return NextResponse.json({
       text,

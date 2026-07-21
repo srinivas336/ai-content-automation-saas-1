@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/demo-auth";
 
 export default function GeneratePage() {
   const [platform, setPlatform] = useState("Instagram");
@@ -21,11 +21,9 @@ export default function GeneratePage() {
     setResult("");
 
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const user = getCurrentUser();
 
-      if (!session) {
+      if (!user) {
         throw new Error("You must be logged in.");
       }
 
@@ -33,12 +31,12 @@ export default function GeneratePage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           platform,
           topic,
           tone,
+          userEmail: user.email,
         }),
       });
 

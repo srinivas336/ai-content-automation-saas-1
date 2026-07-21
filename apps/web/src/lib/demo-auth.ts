@@ -31,6 +31,32 @@ export function getCurrentUser(): DemoUser | null {
   }
 }
 
+export function getSession() {
+  const user = getCurrentUser();
+
+  return {
+    data: {
+      session: user
+        ? {
+            access_token: 'demo-token',
+            user,
+          }
+        : null,
+    },
+    error: user ? null : { message: 'No active session.' },
+  };
+}
+
+export function getUser() {
+  const user = getCurrentUser();
+  return {
+    data: {
+      user,
+    },
+    error: user ? null : { message: 'No authenticated user.' },
+  };
+}
+
 export function isAuthenticated() {
   return Boolean(getCurrentUser());
 }

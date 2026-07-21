@@ -2,35 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { getCurrentUser, signOut } from "@/lib/demo-auth";
 
 export default function DashboardPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    async function loadUser() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+    const user = getCurrentUser();
 
-      if (!session) {
-        router.push("/signin");
-        return;
-      }
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      setEmail(user?.email ?? "");
+    if (!user) {
+      router.push("/signin");
+      return;
     }
 
-    loadUser();
+    setEmail(user.email);
   }, [router]);
 
   async function handleLogout() {
-    await supabase.auth.signOut();
+    signOut();
     router.push("/signin");
   }
 
